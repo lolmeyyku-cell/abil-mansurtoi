@@ -150,7 +150,7 @@
     <!-- Audio Element (Ambient Traditional Background Music) -->
     <audio id="bg-music" loop preload="auto">
         <!-- Royalty-free soft acoustic melody suitable for Kazakh celebration -->
-        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=soft-ambient-111154.mp3" type="audio/mpeg">
+        <source src="music.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Ambient Floating Sparkles Canvas -->
@@ -591,19 +591,30 @@
         const audio = document.getElementById('bg-music');
         const musicIcon = document.getElementById('music-icon');
 
+        // Музыка повторяется автоматически после окончания
+        audio.loop = true;
+
         function toggleAudio() {
-            if (isPlaying) {
+            if (!audio.paused) {
                 audio.pause();
-                musicIcon.className = 'fas fa-music text-lg';
-            } else {
-                audio.play().then(() => {
-                    musicIcon.className = 'fas fa-pause text-lg text-gold-dark';
-                }).catch(err => {
-                    console.log('Audio playback prevented:', err);
-                });
+                isPlaying = false;
+                musicIcon.className = 'fas fa-volume-mute text-lg';
+                return;
             }
-            isPlaying = !isPlaying;
+
+            audio.play().then(() => {
+                isPlaying = true;
+                musicIcon.className = 'fas fa-volume-up text-lg text-gold-dark';
+            }).catch(err => {
+                isPlaying = false;
+                console.log('Audio playback prevented:', err);
+            });
         }
+
+        audio.addEventListener('ended', () => {
+            isPlaying = false;
+            musicIcon.className = 'fas fa-volume-mute text-lg';
+        });
 
         /* ----------------------------------------------------
          * 5. PARTICLES CANVAS (Gold Light Sparkles)
