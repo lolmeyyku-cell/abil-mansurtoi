@@ -539,7 +539,9 @@
                 startMusic();
             }
         }
-        
+
+        // Браузер не разрешает autoplay со звуком без действия пользователя.
+        // Поэтому запускаем музыку при первом клике/касании по странице.
         document.addEventListener('pointerdown', startMusic, { once: true });
         document.addEventListener('touchstart', startMusic, { once: true, passive: true });
 
