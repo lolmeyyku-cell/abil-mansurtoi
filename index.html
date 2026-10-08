@@ -616,7 +616,9 @@
             musicIcon.className = 'fas fa-volume-mute text-lg';
         });
 
-        // Запуск музыки после первого взаимодействия: касание/клик или скролл.
+        // Автозапуск после первого реального взаимодействия пользователя.
+        // Телефон: начало свайпа/касания.
+        // ПК: движение мыши, нажатие клавиши или клик.
         let musicStartedByUser = false;
 
         function startMusicOnInteraction() {
@@ -627,18 +629,33 @@
                 isPlaying = true;
                 musicIcon.className = 'fas fa-volume-up text-lg text-gold-dark';
 
-                document.removeEventListener('pointerdown', startMusicOnInteraction);
-                window.removeEventListener('scroll', startMusicOnInteraction);
+                removeMusicInteractionListeners();
             }).catch(err => {
                 console.log('Музыка ждёт разрешения браузера:', err);
             });
         }
 
+        function removeMusicInteractionListeners() {
+            document.removeEventListener('pointerdown', startMusicOnInteraction);
+            document.removeEventListener('touchstart', startMusicOnInteraction);
+            document.removeEventListener('touchmove', startMusicOnInteraction);
+            document.removeEventListener('keydown', startMusicOnInteraction);
+            document.removeEventListener('mousemove', startMusicOnInteraction);
+            window.removeEventListener('wheel', startMusicOnInteraction);
+            window.removeEventListener('scroll', startMusicOnInteraction);
+        }
+
+        // Телефон — музыка начинает играть при первом касании/свайпе.
         document.addEventListener('pointerdown', startMusicOnInteraction, { passive: true });
         document.addEventListener('touchstart', startMusicOnInteraction, { passive: true });
+        document.addEventListener('touchmove', startMusicOnInteraction, { passive: true });
+
+        // ПК — любое реальное взаимодействие.
+        document.addEventListener('mousemove', startMusicOnInteraction, { passive: true });
+        document.addEventListener('keydown', startMusicOnInteraction);
+        document.addEventListener('pointerdown', startMusicOnInteraction, { passive: true });
         window.addEventListener('wheel', startMusicOnInteraction, { passive: true });
         window.addEventListener('scroll', startMusicOnInteraction, { passive: true });
-        window.addEventListener('touchmove', startMusicOnInteraction, { passive: true });
 
         /* ----------------------------------------------------
          * 5. PARTICLES CANVAS (Gold Light Sparkles)
