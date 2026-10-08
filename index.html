@@ -148,7 +148,7 @@
 <body class="relative min-h-screen text-charcoal flex flex-col items-center justify-start antialiased">
 
     <!-- Audio Element (Ambient Traditional Background Music) -->
-    <audio id="bg-music" loop preload="auto">
+    <audio id="bg-music" loop preload="auto" playsinline>
         <!-- Royalty-free soft acoustic melody suitable for Kazakh celebration -->
         <source src="music.mp3" type="audio/mpeg">
     </audio>
@@ -517,33 +517,53 @@
         const audio = document.getElementById('bg-music');
         const musicIcon = document.getElementById('music-icon');
 
-        audio.loop = true;
+        function setMusicIcon(playing) {
+            musicIcon.className = playing
+                ? 'fas fa-volume-up text-lg text-gold-dark'
+                : 'fas fa-volume-mute text-lg';
+        }
 
         function startMusic() {
             if (isPlaying) return;
 
             audio.play().then(() => {
                 isPlaying = true;
-                musicIcon.className = 'fas fa-volume-up text-lg text-gold-dark';
+                setMusicIcon(true);
             }).catch(err => {
-                console.log('Audio playback prevented:', err);
+                console.log('Музыка не запустилась:', err);
             });
         }
 
-        function toggleAudio() {
+        function toggleAudio(event) {
+            if (event) event.stopPropagation();
+
             if (isPlaying) {
                 audio.pause();
                 isPlaying = false;
-                musicIcon.className = 'fas fa-volume-mute text-lg';
+                setMusicIcon(false);
             } else {
-                startMusic();
+                audio.play().then(() => {
+                    isPlaying = true;
+                    setMusicIcon(true);
+                }).catch(err => {
+                    console.log('Музыка не запустилась:', err);
+                });
             }
         }
 
-        // Браузер не разрешает autoplay со звуком без действия пользователя.
-        // Поэтому запускаем музыку при первом клике/касании по странице.
-        document.addEventListener('pointerdown', startMusic, { once: true });
-        document.addEventListener('touchstart', startMusic, { once: true, passive: true });
+        let musicStartedByUser = false;
+
+        function startMusicOnce() {
+            if (musicStartedByUser) return;
+            musicStartedByUser = true;
+            startMusic();
+
+            document.removeEventListener('pointerdown', startMusicOnce);
+            window.removeEventListener('scroll', startMusicOnce);
+        }
+
+        document.addEventListener('pointerdown', startMusicOnce, { passive: true });
+        window.addEventListener('scroll', startMusicOnce, { passive: true });
 
         /* ----------------------------------------------------
          * 5. PARTICLES CANVAS (Gold Light Sparkles)
