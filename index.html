@@ -635,7 +635,10 @@
         }
 
         document.addEventListener('pointerdown', startMusicOnInteraction, { passive: true });
+        document.addEventListener('touchstart', startMusicOnInteraction, { passive: true });
+        window.addEventListener('wheel', startMusicOnInteraction, { passive: true });
         window.addEventListener('scroll', startMusicOnInteraction, { passive: true });
+        window.addEventListener('touchmove', startMusicOnInteraction, { passive: true });
 
         /* ----------------------------------------------------
          * 5. PARTICLES CANVAS (Gold Light Sparkles)
